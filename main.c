@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <errno.h>
-#include "soundanalyze.h"
+#include "fft.h"
 #include <stdint.h>
 #include <unistd.h>
 #include <time.h>

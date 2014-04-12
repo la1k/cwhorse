@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <fftw3.h>
-#include "soundanalyze.h"
+#include "fft.h"
 
 FILE *fp; //containing arecord process for sampling data from copy device
 fftw_complex *in, *out; //fftw3 arrays: in contains data input to fourier transform, out is the forward fourier transform

@@ -12,7 +12,7 @@ The name CW HORSE should induce vivid images of horses sniffing the radio-freque
                      /''))))'                  \)))
                     %()(()                       ((((
                    (()(/                          |))))
-                  /~() |                          (((((
+                  /~()) |                          (((((
                  )()(/  /\                  |       ))))))
                 /)(*   / `|    |           ,\     /((((((
              , )\)))  /   |   / `-.______.<  \   |  )))))

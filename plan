@@ -1,0 +1,13 @@
+cwhorse: en hest som effektivt og flinkt sniffer over båndet og dekoder CW. Kloner seg selv for hvert signal. 
+
+
+Implementeringsplan:
+
+1) Som første steg, drit i at data egentlig taes inn fra riggen på en annen måte og bare les inn en lydfil med opptak. 
+2) Kjør FFT, plukk ut en FFT-bin å gjøre analyse på
+3) Implementer formlene i E. L. Bell 1975 som funksjoner for prosessering signal -> fornuftige binære ting
+4) Finn en eller annen fornuftig abstraksjon for tegn? Morsesignal -> tegn og bokstaver, bruk sannsynlighetsformler i Bell. 
+5) Test på lyd, vurder om det er godt nok eller om forandringer må til
+6) Detekter i hvilke FFT-bins det er morsesignal, kjør analyse på hvert signal (egen tråd?)
+7) Ta inn data fra rigg
+8) Guidritt i Qt (bør gjøres parallelt med 7 så det ikke blir for krøkkete. Del opp kodebasen i to, en analysedel og en fjasedel med gui og dritt så de lett kan plukkes fra hverandre)

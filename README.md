@@ -5,4 +5,22 @@ CW decoding program set to be based on "Processing of the manual morse signal us
 
 Will decode CW on multiple streams in parallel. 
 
-The name CW HORSE should induce vivid images of horses sniffing the radio-frequent ground for morse signals. 
+The name CW HORSE should induce vivid images of horses sniffing the radio-frequent ground for morse signals.
+
+                        ..,,,,_          ____
+                       /(\())) "-.____.-"    `-.-,
+                     /''))))'                  \)))
+                    %()(()                       ((((
+                   (()(/                          |))))
+                  /~() |                          (((((
+                 )()(/  /\                  |       ))))))
+                /)(*   / `|    |           ,\     /((((((
+             , )\)))  /   |   / `-.______.<  \   |  )))))
+          _,,)\.~,)  /    |   |  /         `. \  \  ((((
+          (()`  ``  /     |  / \ |           `.\  | (((
+           |     \ /      \  | | |             )| |  ))
+           |6`   |/        | | | |            / | |  '
+           |    .'         | | /_(           /_(/ /
+           |   |           /_(/__]           \_/_(
+           \, _)          /__]                /__]
+    --... ...-- -..   .  .--.. .- .---- -.-  .-.. -. .---- -.-

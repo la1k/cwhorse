@@ -1,4 +1,38 @@
 #include <stdio.h>
+#include "processing.h"
+#include <stdlib.h>
+#include <math.h>
+
+void initializeKalmanCoeff(KalmanCoeff *coeff){
+	coeff->G = 0;
+	coeff->V_k = 0;
+	coeff->V_kpp = 0;
+	coeff->xhat_k = 0;
+	coeff->xhat_kpp = 0;
+}
+
+void initializeTimingCoeff(TimingCoeff *coeff){
+	coeff->t1 = T_SHORTEST_DOT_DURATION;
+	coeff->t2 = T_LONGEST_DASH_DURATION;
+	coeff->T = (coeff->t1 + coeff->t2)/2.0f;
+	coeff->kT = 0;
+	coeff->l = coeff->T/3.0f;
+	coeff->Td = (3*coeff->t1 + 3*coeff->t2)/2.0f;
+	coeff->kTd = 0;
+	coeff->d = coeff->Td/3.0f;
+}
+
+void initializeNoiseStats(NoiseStats *noiseStats){
+	noiseStats->R = 0;
+	noiseStats->V = 0;
+	noiseStats->mu = 0;
+	noiseStats->a = 0;
+	noiseStats->a1 = 0;
+	noiseStats->a2 = 0;
+	noiseStats->k = 0;
+}
+
+
 
 //update kalman coefficients
 //R: noise variance
@@ -6,16 +40,16 @@
 //z: noisy, received morse signal
 void updateKalman(KalmanCoeff *coeff, float R, float Q, float z){
 	//update gain
-	coeff->G = V_kpp/(V_kpp + R);
+	coeff->G = coeff->V_kpp/(coeff->V_kpp + R);
 
 	//update estimation variance
-	coeff->V_k = (1 - coeff->G)*V_kpp;
+	coeff->V_k = (1 - coeff->G)*coeff->V_kpp;
 	
 	//update prediction variance
 	coeff->V_kpp = coeff->V_k + Q;
 
 	//update estimation
-	coeff->xhat_k = coeff->xhat_kpp + coeff->G*(z - xhat_kpp);
+	coeff->xhat_k = coeff->xhat_kpp + coeff->G*(z - coeff->xhat_kpp);
 
 	//update prediction
 	coeff->xhat_kpp = coeff->xhat_k;
@@ -43,11 +77,11 @@ float P(TimingCoeff *timing, int stepsInCurrentState, int w, int x){
 }
 
 //probability of w = 0 given x = 0
-//"time" is time in current state (x = 0)
+//"time" is time spent in current state (x = 0)
 float P00(TimingCoeff *timing, int time){
-	float retProp = 0;
+	float retProb = 0;
 	if ((time >= 0) && (time < (timing->T - timing->l))){
-		retProb = 1.0f
+		retProb = 1.0f;
 	} else if ((time >= (timing->T - timing->l)) && (time < (timing->T + timing->l))){
 		retProb = ((timing->T - time)/(2.0f*timing->l) + 1.0f/2.0f)*12.0f/17.0f + 5.0f/17.0f;
 	} else if ((time >= (timing->T + timing->l)) && (time < (timing->Td - timing->d))){
@@ -57,16 +91,16 @@ float P00(TimingCoeff *timing, int time){
 	} else if ((time >= (timing->Td + timing->d)) && (time < 5*timing->T)){
 		retProb = 1.0f;
 	} else if (time >= 5*timing->T){
-		exp(-(time - 5*timing->T)/(2.0f*timing->T));
+		retProb = exp(-(time - 5*timing->T)/(2.0f*timing->T));
 	}
 	return retProb;
 }
 
 //probability of w = 0 given x = 1
 float P01(TimingCoeff *timing, int time){
-	float retProp = 0;
+	float retProb = 0;
 	if ((time >= 0) && (time < (timing->T - timing->l))){
-		retProp = 1.0f;
+		retProb = 1.0f;
 	} else if ((time >= (timing->T - timing->l)) && (time < (timing->T + timing->l))){
 		retProb = (timing->T - time)/(4.0f*timing->l) + 3.0f/4.0f;
 	} else if ((time >= (timing->T + timing->l)) && (time < (timing->Td - timing->d))){
@@ -82,11 +116,11 @@ float P01(TimingCoeff *timing, int time){
 
 //update variance of on-off-keying function w(k) 
 //assume xhat has been properly thresholded?, {0, 1}
-void updateVarianceW(float *Q, TimingCoeff *timing, float xhat){
+void updateVarianceW(float *Q, TimingCoeff *timing, int stepsInCurrentState, float xhat){
 	if (xhat == 1){
-		*Q = P(timing, -1, 1) * P(timing, 0, 1); 
+		*Q = P(timing, stepsInCurrentState, -1, 1) * P(timing, stepsInCurrentState, 0, 1); 
 	} else if (xhat == 0){
-		*Q = P(timing, 0, 0) * P(timing, 1, 0);
+		*Q = P(timing, stepsInCurrentState, 0, 0) * P(timing, stepsInCurrentState, 1, 0);
 	} else {
 		printf("xhat has not been properly thresholded, quittin' from updateQ()\n");
 		exit(1);
@@ -101,6 +135,10 @@ void updateTiming(TimingCoeff *timing, float T){
 	} else {
 		updateDashDuration(timing, T);
 	}
+
+	//update deviations
+	timing->d = timing->Td/3.0f;
+	timing->l = timing->T/3.0f;
 }
 void updateDashDuration(TimingCoeff *timing, float T){
 	timing->kT += 1;
@@ -133,7 +171,7 @@ void updateNoiseVariance(NoiseStats *noiseStats, float z){
 	noiseStats->a = noiseStats->a1 - noiseStats->a2;
 
 	//update V parameter
-	noiseStats->V += meanIncrement(noiseStats->k, noiseStats->V, (z - noiseStats->mu)*(z - noiseStats-mu));
+	noiseStats->V += meanIncrement(noiseStats->k, noiseStats->V, (z - noiseStats->mu)*(z - noiseStats->mu));
 
 	//finally, update R parameter
 	noiseStats->R = noiseStats->V - noiseStats->a*noiseStats->a/4.0f;

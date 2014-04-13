@@ -24,6 +24,10 @@ struct TimingCoeff{
 	float d; //cut-off/deviation
 };
 
+#define N_FFT 256 
+#define T_SHORTEST_DOT_DURATION 1
+#define T_LONGEST_DASH_DURATION 3
+
 
 //noise statistics and associated values
 struct NoiseStats{
@@ -36,6 +40,12 @@ struct NoiseStats{
 	float a2;
 	int k; //number of samples in means
 };
+
+//initialization
+void initializeKalmanCoeff(KalmanCoeff *coeff);
+void initializeTimingCoeff(TimingCoeff *timing, float t1, float t2);
+void initializeNoiseStats(NoiseStats *noiseStats);
+
 
 //update kalman filter coefficients
 void updateKalman(KalmanCoeff *coeff, float R, float Q, float z);

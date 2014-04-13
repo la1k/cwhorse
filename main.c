@@ -8,7 +8,7 @@
 #include <time.h>
 #include <pthread.h>
 #include <string.h>
-
+#include "processing.h"
 
 
 
@@ -17,8 +17,6 @@
 #include <sndfile.h>
 #include "fft.h"
 
-//number of samples in fft
-#define N 256 
 
 
 
@@ -61,7 +59,7 @@ int main(int argc, char *argv[]){
 
 
 	//divide sound signal into slots, each of size N (corresponding to number of bins in the fft)
-	int slots = num/N;
+	int slots = num/N_FFT;
 	if (c != 1){
 		printf("Too many channels\n");
 		return 1;
@@ -69,15 +67,15 @@ int main(int argc, char *argv[]){
 	}
 
 	//do fft on sound signal, pick a frequency
-	initialize_fft(N);
+	initialize_fft(N_FFT);
 	int follfreq = 34;
 	float *cwsignal = new float[slots];
 	for (i = 0; i < slots; i++)
 	{
 		//run FFT
-		float *arr = (float*)malloc(N*sizeof(float));
-		memcpy(arr, buf + i*N, sizeof(float)*N);
-		run_fft(arr, N);
+		float *arr = (float*)malloc(N_FFT*sizeof(float));
+		memcpy(arr, buf + i*N_FFT, sizeof(float)*N_FFT);
+		run_fft(arr, N_FFT);
 
 		cwsignal[i] = arr[follfreq];
 	}

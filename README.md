@@ -3,7 +3,7 @@ cwhorse
 
 CW decoding program set to be based on "Processing of the manual morse signal using optimal linear filtering, smoothing and decoding" by E. L. Bell (1975) if we find the performance of the algorithms to be satisfactory.
 
-Will decode CW on multiple streams in parallel. 
+Will decode CW in parallel on multiple streams. 
 
 The name CW HORSE should induce vivid images of horses sniffing the radio-frequent ground for morse signals.
 

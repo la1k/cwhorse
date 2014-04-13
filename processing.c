@@ -23,9 +23,50 @@ void updateKalman(KalmanCoeff *coeff, float R, float Q, float z){
 
 
 //probabiliy of w given x and the time spent in the current state
+//assumes pr(dot) == pr(dash) = 1/2
 float P(TimingCoeff *timing, int stepsInCurrentState, int w, int x){
 	//implement from page 30-36
 	//FIXME
+
+
+
+}
+
+//probability of w = 0 given x = 0
+//"time" is time in current state (x = 0)
+float P00(TimingCoeff *timing, int time){
+	float retProp = 0;
+	if ((time >= 0) && (time < (timing->T - timing->l))){
+		retProb = 1.0f
+	} else if ((time >= (timing->T - timing->l)) && (time < (timing->T + timing->l))){
+		retProb = ((timing->T - time)/(2.0f*timing->l) + 1.0f/2.0f)*12.0f/17.0f + 5.0f/17.0f;
+	} else if ((time >= (timing->T + timing->l)) && (time < (timing->Td - timing->d))){
+		retProb = 1.0f;
+	} else if ((time >= (timing->Td - timing->d)) && (time < (timing->Td + timing->d))){
+		retProb = ((timing->Td - time)/(2.0f*timing->d) + 1.0f/2.0f)*4.0f/5.0f + 1.0f/5.0f;
+	} else if ((time >= (timing->Td + timing->d)) && (time < 5*timing->T)){
+		retProb = 1.0f;
+	} else if (time >= 5*timing->T){
+		exp(-(time - 5*timing->T)/(2.0f*timing->T));
+	}
+	return retProb;
+}
+
+//probability of w = 0 given x = 1
+float P01(TimingCoeff *timing, int time){
+	float retProp = 0;
+	if ((time >= 0) && (time < (timing->T - timing->l))){
+		retProp = 1.0f;
+	} else if ((time >= (timing->T - timing->l)) && (time < (timing->T + timing->l))){
+		retProb = (timing->T - time)/(4.0f*timing->l) + 3.0f/4.0f;
+	} else if ((time >= (timing->T + timing->l)) && (time < (timing->Td - timing->d))){
+		retProb = 1.0f;
+	} else if ((time >= (timing->Td - timing->d)) && (time < (timing->Td + timing->d))){
+		retProb = (timing->Td - time)/(2.0f*timing->d) + 1.0f/2.0f;
+	} else if (time >= (timing->Td + timing->d)){
+		retProb = 0;
+	}
+	return retProb;
 }
 
 
@@ -43,18 +84,24 @@ void updateVarianceW(float *Q, TimingCoeff *timing, float xhat){
 }
 
 //character distribution estimation
-void updateDashDuration(TimingCioeff *timing, float T){
+void updateTiming(TimingCoeff *timing, float T){
 	//page 37-38
+	if (T < (3*timing->t1 + timing->t2)/2.0f){
+		updateDotDuration(timing, T);
+	} else {
+		updateDashDuration(timing, T);
+	}
+}
+void updateDashDuration(TimingCoeff *timing, float T){
 	timing->kT += 1;
 	timing->T += meanIncrement(timing->kT, timing->T, T);
-	
 }
 void updateDotDuration(TimingCoeff *timing, float T){
 	timing->kTd += 1;
 	timing->Td += meanIncrement(timing->kTd, timing->Td, T);
 }
 
-
+//function for calculating increment in a mean update. oldVal is current mean, newVal is added value, samples is current amount of samples (including new value) 
 float meanIncrement(int samples, float oldVal, float newVal){
 	return (1.0f/(1.0f*samples)*(newVal - oldVal));
 }

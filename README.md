@@ -23,4 +23,4 @@ The name CW HORSE should induce vivid images of horses sniffing the radio-freque
            |    .'         | | /_(           /_(/ /
            |   |           /_(/__]           \_/_(
            \, _)          /__]                /__]
-		--... ...--  -.. .  .-.. .- .---- -.-  .-.. -. .---- -.-
+    --... ...--  -.. .  .-.. .- .---- -.-  .-.. -. .---- -.-

@@ -26,10 +26,20 @@ void updateKalman(KalmanCoeff *coeff, float R, float Q, float z){
 //assumes pr(dot) == pr(dash) = 1/2
 float P(TimingCoeff *timing, int stepsInCurrentState, int w, int x){
 	//implement from page 30-36
-	//FIXME
+	float p00 = P00(timing, stepsInCurrentState);
+	float p01 = P01(timing, stepsInCurrentState);
 
-
-
+	float pval = 0;
+	if ((w == 0) && (x == 0)){
+		pval = p00;
+	} else if ((w == 0) && (x == 1)){
+		pval = p01;
+	} else if ((w == -1) && (x == 1)){
+		pval = 1 - p01;
+	} else if ((w == 1) && (x == 0)){
+		pval = 1 - p00;
+	}
+	return pval;
 }
 
 //probability of w = 0 given x = 0

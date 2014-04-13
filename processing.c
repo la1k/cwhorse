@@ -43,21 +43,43 @@ void updateVarianceW(float *Q, TimingCoeff *timing, float xhat){
 }
 
 //character distribution estimation
-void updateDashDuration(TimingCoeff *timing, float T){
+void updateDashDuration(TimingCioeff *timing, float T){
+	//page 37-38
 	timing->kT += 1;
-	timing->T = timing->T + 1/(1.0f*timing->kT)*(T - timing->T);
+	timing->T += meanIncrement(timing->kT, timing->T, T);
 	
 }
 void updateDotDuration(TimingCoeff *timing, float T){
 	timing->kTd += 1;
-	timing->Td = timing->Td + 1/(1.0f*timing->kTd)*(T - timing->Td);
-	
+	timing->Td += meanIncrement(timing->kTd, timing->Td, T);
 }
 
-//update noise variance
-void updateNoiseVariance(float *R){
-	//implement from page 38-39
-	//FIXME
+
+float meanIncrement(int samples, float oldVal, float newVal){
+	return (1.0f/(1.0f*samples)*(newVal - oldVal));
+}
+
+//update noise statistics
+void updateNoiseVariance(NoiseStats *noiseStats, float z){
+	//page 38-39
+	noiseStats->k += 1;
+
+	//update signal mean
+	noiseStats->mu += meanIncrement(noiseStats->k, noiseStats->mu, z);
+
+	//update "a" parameters
+	if (z >= noiseStats->mu){
+		noiseStats->a1 += meanIncrement(noiseStats->k, noiseStats->a1, z);
+	} else {
+		noiseStats->a2 += meanIncrement(noiseStats->k, noiseStats->a2, z);
+	}
+	noiseStats->a = noiseStats->a1 - noiseStats->a2;
+
+	//update V parameter
+	noiseStats->V += meanIncrement(noiseStats->k, noiseStats->V, (z - noiseStats->mu)*(z - noiseStats-mu));
+
+	//finally, update R parameter
+	noiseStats->R = noiseStats->V - noiseStats->a*noiseStats->a/4.0f;
 }
 
 //aner faen ikke hva det er

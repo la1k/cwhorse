@@ -43,15 +43,15 @@ void updateVarianceW(float *Q, TimingCoeff *timing, float xhat){
 }
 
 //character distribution estimation
-void updateTimingCoeff(TimingCoeff *timing, float T){
-	//implement from page 37-38
-
-
-	//FIXME
-
-	if (T > ){
-	}
-
+void updateDashDuration(TimingCoeff *timing, float T){
+	timing->kT += 1;
+	timing->T = timing->T + 1/(1.0f*timing->kT)*(T - timing->T);
+	
+}
+void updateDotDuration(TimingCoeff *timing, float T){
+	timing->kTd += 1;
+	timing->Td = timing->Td + 1/(1.0f*timing->kTd)*(T - timing->Td);
+	
 }
 
 //update noise variance

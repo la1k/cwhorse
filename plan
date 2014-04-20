@@ -3,9 +3,11 @@ cwhorse: en hest som effektivt og flinkt sniffer over båndet og dekoder CW. Klo
 
 Implementeringsplan:
 
-WP-1: Fiks morse-wip så man finner ut av hvordan man får best resultat fra rutinene der (https://github.com/magnemahre/morse-wip/)
+WP-1: Fiks morse-wip så man finner ut av hvordan man får best resultat fra rutinene der (https://github.com/magnemahre/morse-wip/). Språkmodell?
 WP-2: Finn ut av og implementer nødvendig preprosessering på signalet (fft, signalmassasje før dekoding) (cwhorse)
-WP-3: GUI (cwhorse)
+WP-3: Etterprosessering av tekst: dra ut kallesignal, korrigere tekst (bør vel antakeligvis taes opp mot sannsynlighetene fra morse-wip) 
+WP-4: GUI (cwhorse)
 
 WP-1 -> WP-2
 WP-3
+WP-4

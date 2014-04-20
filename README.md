@@ -12,7 +12,7 @@ memory-conditional Markov process with application to manual morse decoding" by
 E. L. Bell, 1977 (PhD thesis).
 
 The name CW HORSE should induce vivid images of horses sniffing the
-radio-frequent ground for morse signals.
+radio-frequent ground for morse signals. See fig. 1. 
 
                         ..,,,,_          ____
                        /(\())) "-.____.-"    `-.-,
@@ -31,3 +31,5 @@ radio-frequent ground for morse signals.
            |   |           /_(/__]           \_/_(
            \, _)          /__]                /__]
     --... ...--  -.. .  .-.. .- .---- -.-  .-.. -. .---- -.-
+
+    Figure 1: A horse. 

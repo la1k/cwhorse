@@ -8,7 +8,6 @@
 #include <time.h>
 #include <pthread.h>
 #include <string.h>
-#include "processing.h"
 
 
 
@@ -16,8 +15,9 @@
 #include <stdlib.h>
 #include <sndfile.h>
 #include "fft.h"
+#include <bmorse.h>
 
-
+#define N_FFT 256
 
 
 
@@ -44,16 +44,16 @@ int main(int argc, char *argv[]){
 	f = info.frames;
 	sr = info.samplerate;
 	c = info.channels;
-	printf("frames=%d\n",f);
-	printf("samplerate=%d\n",sr);
-	printf("channels=%d\n",c);
+	//fprintf(stderr, "frames=%d\n",f);
+	fprintf(stderr, "samplerate=%d\n",sr);
+	//fprintf(stderr, "channels=%d\n",c);
 	num_items = f*c;
-	printf("num_items=%d\n",num_items);
+	//fprintf(stderr, "num_items=%d\n",num_items);
 	/* Allocate space for the data to be read, then read it. */
 	buf = (float *) malloc(num_items*sizeof(float));
 	num = sf_read_float(sf,buf,num_items);
 	sf_close(sf);
-	printf("Read %d items\n",num);
+	//fprintf(stderr, "Read %d items\n",num);
 	/* Write the data to filedata.out. */
 	out = fopen("filedata.out","w");
 
@@ -68,17 +68,42 @@ int main(int argc, char *argv[]){
 
 	//do fft on sound signal, pick a frequency
 	initialize_fft(N_FFT);
-	int follfreq = 34;
+	int follfreq = 32;
 	float *cwsignal = new float[slots];
+
+	bool printChars = false;
+	morse *mp = new morse(); //bmorse decoder object
+	static int init = 0;
+
+	//parameters for bmorse
+	float rn;
+	long int retstat, imax, xhat, elmhat;
+	float pmax, zout, spdhat, px;
+
+	FILE *file;
+	file = fopen("fftkis.dat", "w");
+
 	for (i = 0; i < slots; i++)
 	{
 		//run FFT
 		float *arr = (float*)malloc(N_FFT*sizeof(float));
 		memcpy(arr, buf + i*N_FFT, sizeof(float)*N_FFT);
-		run_fft(arr, N_FFT);
+		run_fft(arr);
 
-		cwsignal[i] = arr[follfreq];
+		for (int j = 0; j < N_FFT; j++){
+			fprintf(file, "%f ", arr[j]);
+		}
+		fprintf(file, "\n");
+
+
+		float x = arr[follfreq];
+		mp->noise_(x, &rn, &zout);
+		retstat = mp->proces_(&zout, &rn, &xhat, &px, &elmhat, &spdhat, &imax, &pmax);
+		if (!printChars){
+			printf("%f %d %d %d %d %f %f %f %f %f\n", x, (int)retstat, (int)imax, (int)elmhat, (int)xhat, px, pmax, spdhat, rn, zout);
+		}	
 	}
+	fclose(file);
 	
 	//FIXME: do test processing on the cw signal array as if it was in real-time
 
